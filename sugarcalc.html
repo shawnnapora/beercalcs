@@ -1,0 +1,121 @@
+<html>
+	<head>
+		<title>Carb Sugar</title>
+		<style>
+			body {
+				font-family: Arial, Helvetica, sans-serif;
+			}
+
+			table{
+				border: 1px;
+				border-radius: 5px;
+				border-collapse: collapse;
+				margin-left: 20px;
+			}
+
+			table.reference {
+				width: 250;
+			}
+
+			td.output{
+				color: green;
+			}
+
+			td.center{
+				text-align: center;
+			}
+		</style>
+		<script>
+			function calc(){
+				var lbs = Number(document.getElementById("weight_lbs").value);
+				var ozs = Number(document.getElementById("weight_ozs").value);
+				var gravity = Number(document.getElementById("gravity").value);
+				var vol_co2 = Number(document.getElementById("volume").value);
+				var temp = Number(document.getElementById("temp").value);
+
+				var weight = (ozs / 16 ) + lbs;
+				var lbs_per_gal = 8.34;  //for plain water
+				var gals_beer = weight / (lbs_per_gal * gravity);
+				
+				gals_beer = Math.round(gals_beer * 100) / 100;  //yucky JS rounding.
+				document.getElementById("gallons").innerHTML = gals_beer;
+
+				var residual_co2 = 3.0378 - (temp * .050062) + (temp * temp * .00026555);
+				vol_co2 -= residual_co2;
+				//used 1gal-01 batch info to calculate
+				var ozs_per_galvol = 2.04; //.84 * (2.5 - .78) / .71 = 2.04
+				var ozs_sugar = gals_beer * vol_co2 / ozs_per_galvol;
+				
+				residual_co2 = Math.round(residual_co2*100)/100;
+				document.getElementById("residual").innerHTML = residual_co2 + " vol";
+
+
+				ozs_sugar = Math.round(ozs_sugar*100) / 100;
+				var output = document.getElementById("sugar");
+				output.innerHTML = ozs_sugar + " oz.";
+				output.innerHTML += " (" + (ozs_sugar * 437.5) + " grains)";
+			}
+		</script>
+	</head>
+	<body>
+		<h1>Priming Sugar Calculator</h1>
+		<p>
+			Calculate the priming sugar needed for beer batches by batch weight, 
+			measured gravity, and volumes of CO<sub>2</sub> desired for the beer style.
+		</p>
+		<h2>Calculator:</h2>
+		<table class="calc">
+			<tr>
+				<td>Final Gravity:</td>
+				<td><input type="text" size="5" id="gravity" value="1.012"/></td>
+			</tr>
+			<tr>
+				<td>Beer Weight:</td>
+				<td>
+					<input type="text" size="2" id="weight_lbs" /> lb, &nbsp;
+					<input type="text" size="2" id="weight_ozs" /> oz
+				</td>
+			</tr>
+			<tr>
+				<td>Beer Temp (F):</td>
+				<td>
+					<input type="text" id="temp" size="2" value="75" />
+				</td>
+			</tr>
+			<tr>
+				<td>Volumes CO<sub>2</sub>:</td>
+				<td><input type="text" id="volume" size="3" value="2.5" /></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td height="50px">
+					<input type="button" value="Calculate!" onclick="calc();"/>
+				</td>
+			</tr>
+			<tr>
+				<td>Residual CO<sub>2</sub>:</td>
+				<td class="output" id="residual"></td>
+			</tr>
+			<tr>
+				<td>Gallons of beer:</td>
+				<td class="output" id="gallons"></td>
+			</tr>
+			<tr>
+				<td>Dextrose:</td>
+				<td class="output" id="sugar"></td>
+			</tr>
+		</table>
+		<h2>Beer Style Carbonation Reference:</h2>
+		<table class="reference">
+			<tbody>
+			<tr><th width="50%">Style</th><th>Volume of CO<sub>2</sub></th></tr>
+			<tr><td>American ales</td><td class="center">2.2 - 3.0</td></tr>
+			<tr><td>British ales</td><td class="center">1.5 - 2.2</td></tr>
+			<tr><td>German weizens</td><td class="center">2.8 - 5.1</td></tr>
+			<tr><td>Belgian ales</td><td class="center">2.0 - 4.5</td></tr>
+			<tr><td>European lagers</td><td class="center">2.4 - 2.6</td></tr>
+			<tr><td>American lagers</td><td class="center">2.5 - 2.8</td></tr>
+			</tbody>
+		</table>
+	</body>
+</html>
